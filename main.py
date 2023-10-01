@@ -13,18 +13,21 @@ help                         - this information
 from pathlib import Path
 
 
-def input_error(func):
+def action_error(func):
     def inner(*args, **kwargs):
         try:
             retcode = func(*args, **kwargs)
         except KeyError:
-            retcode = (kwargs, "Unkwown person, try again")
+            retcode = ("Unkwown person, try again", kwargs)
         except ValueError:
-            retcode = (kwargs, "The phone number must consist of numbers ONLY!")
+            retcode = (kwargs, "The phone number must consist of numbers!")
 
         return retcode
 
     return inner
+
+
+
 
 
 def normalize(number: str) -> str:
@@ -35,23 +38,23 @@ def normalize(number: str) -> str:
     return number
 
 
-@input_error
+@action_error
 def add_number(person: str, number: str, phone_book: dict) -> tuple:
     phone_book[person] = normalize(number)
     return phone_book, "Abonent added succefully!"
 
 
-@input_error
+@action_error
 def change_number(person: str, number: str, phone_book: dict) -> tuple:
     if person not in phone_book:
         raise KeyError
     phone_book[person] = normalize(number)
-    return phone_book, f"Phone number <{person}> changed succefully!"
+    return f"Phone number <{person}> changed succefully!", phone_book
 
 
-@input_error
+@action_error
 def phone(person: str, **phone_book: dict) -> str:
-    return phone_book[person]
+    return (phone_book[person],)
 
 
 # @input_error
@@ -85,14 +88,14 @@ def parser(command: str, phone_book: dict, data_pb: Path) -> str:
         case "hello":
             return "How can I help you?"
         case "phone":
-            return phone(" ".join(command[1:]), **phone_book)
+            return phone(" ".join(command[1:]), **phone_book)[0]
         case "add":
             retcode = add_number(" ".join(command[1:-1]), command[-1], phone_book)
             phone_book, return_str = retcode
             return return_str
         case "change":
             retcode = change_number(" ".join(command[1:-1]), command[-1], phone_book)
-            phone_book, return_str = retcode
+            return_str, phone_book = retcode
             return return_str
         # case "delete":
         #     retcode = delete(" ".join(command[1:]), **phone_book)
