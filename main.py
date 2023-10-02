@@ -4,6 +4,7 @@ you can use command below:
 add <name> <phone number>    - add new record to the phonebook
 change <name> <phone number> - change record into phonebook
 phone <name>                 - show phone number for name
+delete <name>                - delete user <name> from phonebook
 show all                     - show all records from phonebook
 hello                        - it is just hello :)
 exit | close | good bye      - finish the program
@@ -54,10 +55,10 @@ def phone(person: str, **phone_book: dict) -> str:
     return (phone_book[person],)
 
 
-# @input_error
-# def delete(person: str, **phone_book: dict) -> tuple:
-#     del phone_book[person]
-#     return phone_book, f"Abonent <{person}> was succefully deleted!"
+@input_error
+def delete(person: str, phone_book: dict) -> tuple:
+    del phone_book[person]
+    return phone_book, f"Abonent <{person}> was succefully deleted!"
 
 
 def show_all(phone_book: dict) -> str:
@@ -94,11 +95,10 @@ def parser(command: str, phone_book: dict, data_pb: Path) -> str:
             retcode = change_number(" ".join(command[1:-1]), command[-1], phone_book)
             return_str, phone_book = retcode
             return return_str
-        # case "delete":
-        #     retcode = delete(" ".join(command[1:]), **phone_book)
-        #     phone_book, return_str = retcode
-        #     print(phone_book)
-        #     return return_str
+        case "delete":
+            retcode = delete(" ".join(command[1:]), phone_book)
+            phone_book, return_str = retcode
+            return return_str
 
     return "Command not recognized, try again"
 
