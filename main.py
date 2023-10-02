@@ -13,7 +13,7 @@ help                         - this information
 from pathlib import Path
 
 
-def action_error(func):
+def input_error(func):
     def inner(*args, **kwargs):
         try:
             retcode = func(*args, **kwargs)
@@ -38,13 +38,13 @@ def normalize(number: str) -> str:
     return number
 
 
-@action_error
+@input_error
 def add_number(person: str, number: str, phone_book: dict) -> tuple:
     phone_book[person] = normalize(number)
     return phone_book, "Abonent added succefully!"
 
 
-@action_error
+@input_error
 def change_number(person: str, number: str, phone_book: dict) -> tuple:
     if person not in phone_book:
         raise KeyError
@@ -52,7 +52,7 @@ def change_number(person: str, number: str, phone_book: dict) -> tuple:
     return f"Phone number <{person}> changed succefully!", phone_book
 
 
-@action_error
+@input_error
 def phone(person: str, **phone_book: dict) -> str:
     return (phone_book[person],)
 
