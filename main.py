@@ -27,11 +27,8 @@ def input_error(func):
     return inner
 
 
-
-
-
 def normalize(number: str) -> str:
-    for i in "+-()":
+    for i in "+-() ":
         number = number.replace(i, "")
     if not number.isdigit():
         raise ValueError
