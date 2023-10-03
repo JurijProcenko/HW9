@@ -19,9 +19,9 @@ def input_error(func):
         try:
             retcode = func(*args, **kwargs)
         except KeyError:
-            retcode = ("Unkwown person, try again", kwargs)
+            retcode = "Unkwown person, try again"
         except ValueError:
-            retcode = (kwargs, "The phone number must consist of numbers!")
+            retcode = "The phone number must consist of numbers!"
 
         return retcode
 
@@ -39,7 +39,7 @@ def normalize(number: str) -> str:
 @input_error
 def add_number(person: str, number: str, phone_book: dict) -> tuple:
     phone_book[person] = normalize(number)
-    return phone_book, "Abonent added succefully!"
+    return "Abonent added succefully!"
 
 
 @input_error
@@ -47,18 +47,18 @@ def change_number(person: str, number: str, phone_book: dict) -> tuple:
     if person not in phone_book:
         raise KeyError
     phone_book[person] = normalize(number)
-    return f"Phone number <{person}> changed succefully!", phone_book
+    return f"Phone number <{person}> changed succefully!"
 
 
 @input_error
 def phone(person: str, **phone_book: dict) -> str:
-    return (phone_book[person],)
+    return phone_book[person]
 
 
 @input_error
 def delete(person: str, phone_book: dict) -> tuple:
     del phone_book[person]
-    return phone_book, f"Abonent <{person}> was succefully deleted!"
+    return f"Abonent <{person}> was succefully deleted!"
 
 
 def show_all(phone_book: dict) -> str:
@@ -86,18 +86,18 @@ def parser(command: str, phone_book: dict, data_pb: Path) -> str:
         case "hello":
             return "How can I help you?"
         case "phone":
-            return phone(" ".join(command[1:]), **phone_book)[0]
+            return phone(" ".join(command[1:]), **phone_book)
         case "add":
             retcode = add_number(" ".join(command[1:-1]), command[-1], phone_book)
-            phone_book, return_str = retcode
+            return_str = retcode
             return return_str
         case "change":
             retcode = change_number(" ".join(command[1:-1]), command[-1], phone_book)
-            return_str, phone_book = retcode
+            return_str = retcode
             return return_str
         case "delete":
             retcode = delete(" ".join(command[1:]), phone_book)
-            phone_book, return_str = retcode
+            return_str = retcode
             return return_str
 
     return "Command not recognized, try again"
