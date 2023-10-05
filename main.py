@@ -24,9 +24,9 @@ if data_pb.exists():
 
 
 def input_error(func):
-    def inner(*args, **kwargs):
+    def inner(*args):
         try:
-            retcode = func(*args, **kwargs)
+            return func(*args)
         except KeyError:
             retcode = "Unkwown person, try again"
         except ValueError:
@@ -40,9 +40,10 @@ def input_error(func):
 def normalize(number: str) -> str:
     for i in "+-() ":
         number = number.replace(i, "")
-    if not number.isdigit():
+    if int(number):
+        return number
+    else:
         raise ValueError
-    return number
 
 
 @input_error
@@ -55,10 +56,10 @@ def add_number(*args) -> str:
 @input_error
 def change_number(*args) -> str:
     person = " ".join(args[:-1])
-    if person not in phone_book:
-        raise KeyError
-    phone_book[person] = normalize(args[-1])
-    return f"Phone number <{person}> changed succefully to {phone_book[person]}!"
+    number = phone_book[person]
+    if number:
+        phone_book[person] = normalize(args[-1])
+        return f"Phone number <{person}> changed succefully to {phone_book[person]}!"
 
 
 @input_error
@@ -73,6 +74,7 @@ def delete(*args) -> str:
     del phone_book[person]
     return f"Abonent <{person}> was succefully deleted!"
 
+
 @input_error
 def show_all() -> str:
     return_string = ""
@@ -80,13 +82,15 @@ def show_all() -> str:
         return_string += f"{key}    {values}\n"
     return return_string
 
+
 @input_error
 def help(*args):
     return __doc__
 
+
 @input_error
 def hello(*args):
-    return "How can I help you?"
+    return "Hi! How can I help you?"
 
 
 COMMANDS = {
@@ -98,6 +102,7 @@ COMMANDS = {
     "hello": hello,
     "help": help,
 }
+
 
 def parser(command: str) -> str:
     if command.lower().startswith("show all"):
@@ -119,7 +124,7 @@ def parser(command: str) -> str:
 
 def main():
     while True:
-        command = input("Enter your command>> ")
+        command = input("Enter your command > ")
         ret_code = parser(command)
         if ret_code == "Good bye!":
             print("Good bye!")
